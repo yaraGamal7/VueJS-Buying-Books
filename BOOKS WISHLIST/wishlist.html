@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css"
+        integrity="sha384-nU14brUcp6StFntEOOEBvcJm4huWjB0OcIeQ3fltAfSmuZFrkAif0T+UtNGlKKQv" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.css">
+</link>
+    <style>
+        body {
+            background-image: url(/img/background.PNG);
+            
+           
+        }
+        .card p{
+            font-weight: bold;
+            text-align: justify;
+            
+        }
+        .card{
+            width: 26rem;
+            margin:0.3rem;
+            margin-right: 1.2rem;
+            border: none; 
+            box-shadow: 4px 4px 3px rgb(176, 113, 206); 
+            background-image: linear-gradient(to bottom,transparent 70%, #e3c1fa);
+        }
+        .card:hover{
+            cursor: pointer;
+            background-image: linear-gradient(to bottom,#d1b2fa 60%,transparent);
+        }
+        .more{
+            color:#590D22;
+        }
+        .less{
+            color:#c91894;
+        }
+        p{
+            color: rgb(56, 56, 56);
+            font-family: 'Times New Roman', Times, serif;
+            font-size:1rem;
+            font-weight: bold;
+        }
+        #bookname{
+            
+            font-family: "Anta", sans-serif;
+            font-weight: bold;
+            color: #5c18c9;
+        }
+        .btn{
+            color: white;
+            background-color: #8c3aac;
+            border:none;
+            border-radius: 10rem;
+            box-shadow: 3px 3px 3px #4f0f68;
+        }
+        #btnwishlist{
+            color: white;
+            font-weight: bold;
+            width: 9rem;
+            height:3rem;
+            background-color: #792274;
+
+        }
+        #btnwishlist:hover{
+            background-color: #c06cc0;
+        }
+        #itemnavbar{
+            color: white;
+            
+
+        }
+        .fa-solid{
+            color: white;
+            font-size: 1.7rem;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="mainwrapper">
+        <!----navbar------>
+        <div class="d-flex justify-content-between p-2 align-items-baseline" style="background-color:#3f0d5c; border-bottom-left-radius: 1.5rem; border-bottom-right-radius: 1.5rem; border: none; box-shadow: 3px 3px 3px rgb(39, 6, 82),3px 3px 5px lightblue;">
+            <div>
+            <a id="icon" href="#" @click.prevent="iswishlistvisible=false"style="text-decoration: none; color: crimson; margin-left: 1rem;"><i class="fa-solid fa-book"></i></a>
+        </div>
+        <div class="d-flex align-items-baseline" style="margin-right: 1rem;">
+            <p style="font-size:20px" id="itemnavbar" class="px-2 my-2">[{{wishlist.items.length}}]<span  v-if="wishlist.items.length==1">Item </span><span v-else style="font-size:20px">Item </span>with total price [{{gettotalprice()}}]</p>
+            <button id="btnwishlist" class="btn px-2" @click="iswishlistvisible=true"><i class="fa-regular fa-heart px-2"></i>WishList</button>
+        </div>
+    </div>
+     <!---------card------------>
+    <div class="row mt-1" v-if="iswishlistvisible==false">
+        <div v-for="book in books"class="card justify-content-between">
+            <img :src="book.image" :title="book.auther" class="card-img-top" style="height: 75%;">
+            <div class="row mt-2">
+                <h3 id="bookname" class="text-center m-auto">{{book.Name}}</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <p>Category:{{book.category}}</p>
+                </div>
+                <div class="col">
+                    <p>Author Name:{{book.auther}}</p>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <p :class="[book.pages>50?'more':'',book.pages<50?'less':'']">Number of pages: <span>{{book.pages}}</span></p>
+                </div>
+                <div class="col">
+                    <p>Price: {{book.price}}</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                
+                <div class="d-flex justify-content-between align-items-baseline">
+                    <p>ISBN:{{book.id}}</p>
+                    <button class="btn" :disabled="book.instore==0" @click="addtolist(book)"><i class="fa-regular fa-heart px-2"></i>add to wishlist</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!---end of product-->
+    <!---wishlist----->
+    <div class="row" v-if="iswishlistvisible==true">
+        <h2 class="col text-danger text-center my-3 m-auto" v-if="wishlist.items.length==0">
+            Sorry your wishlist is empty
+        </h2>
+        <!---wishlist content---->
+        <table class="table table-striped table-bordered mx-auto" width="90" v-if="wishlist.items.length>0">
+            <thead>
+              <tr>
+                <th>ISBN</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in wishlist.items">
+                <th>{{item.book.id}}</th>
+                <td>{{item.book.Name}}</td>
+                <td>{{item.book.category}}</td>
+                <td>{{item.book.price}}</td>
+                <td><button class="btn btn-danger" @click="removebook(item)">remove</button></td>
+              </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3">totalprice</th>
+                    <th colspan="2">{{gettotalprice()}}</th>
+                </tr>
+            </tfoot>
+          </table>
+    </div>
+    </div>
+    <script src="/books.js"></script>
+    <script>
+        
+        const app = Vue.createApp({
+
+            data: () => ({
+                books:books,
+                iswishlistvisible:false,
+                wishlist:{
+                    items:[]
+                    //items=> book
+                }
+
+            }),//end of data
+
+            methods: {
+                addtolist(book){
+                    this.wishlist.items.push({
+                        book:book,
+                        quantity:1
+                    });
+                    book.instore--;
+                },
+                gettotalprice(){
+                    let totalprice=0;
+                    for(let i = 0;i<this.wishlist.items.length;i++){
+                        totalprice += this.wishlist.items[i].quantity*this.wishlist.items[i].book.price;
+                    }return totalprice;
+
+                },
+                removebook(item){
+                    item.quantity--;
+                    if(item.quantity==0){
+                        this.wishlist.items.splice(this.wishlist.items.findIndex(iitem=>iitem.book.id==item.book.id),1);
+                    }
+                    item.book.instore++;
+                },
+                formatcurrency(value){
+                    return Intl.NumberFormat("ar-Eg",{
+                        style:'currency',
+                        currency: "EGP",
+                        minimumIntegerDigits:0,
+                    }).format(value)
+                }
+
+            }
+
+        });//end of app
+        app.mount("#mainwrapper");
+    </script>
+</body>
+
+</html>
